@@ -40,40 +40,48 @@
 
     <h1>{tableTitle}</h1>
 
-    <f:for as="siteTabs" key="siteIdentifier" each="{tabs}">
-        <f:if condition="{tabs -> f:count()} > 1">
-            <h2>Site: {siteIdentifier}</h2>
-        </f:if>
-        <f:if condition="{tabs -> f:count()} > 1 || {siteTabs -> f:count()} > 1">
-            <f:for each="{siteTabs}" as="tab">
-                <div class="tab mb-3">
-                    <a class="btn btn-primary{f:if(condition: tab.active, then: ' active')}" href="{tab.url}">
-                        {tab.title}
-                    </a>
-                    <f:variable name="rootLine" value="" />
-                    <f:for as="page" each="{tab.rootLine}" iteration="i">
-                        <f:if condition="{page.title}">
-                            <f:if condition="{i.isFirst}">
-                                <f:then><f:variable name="rootLine" value="{page.title}" /></f:then>
-                                <f:else>
-                                    <f:variable name="rootLine" value="{rootLine} -> {page.title}" />
-                                </f:else>
-                            </f:if>
+    <f:if condition="{tabs -> f:count()} > 0 && {f:first(value: tabs) -> f:count()} > 1">
+        <div class="card-container">
+            <f:for as="siteTabs" key="siteIdentifier" each="{tabs}">
+                <div class="card card-size-medium">
+                    <div class="card-body">
+                        <f:if condition="{tabs -> f:count()} > 1">
+                            <h2 class="card-title">Site: {siteIdentifier -> f:format.crop(maxCharacters: '20', append: '...')}</h2>
                         </f:if>
-                    </f:for>
-                    <button class="btn" data-bs-toggle="popover" data-bs-content="Rootline: {rootLine}">
-                        <core:icon identifier="actions-info-circle" />
-                    </button>
+                        <f:if condition="{tabs -> f:count()} > 1 || {siteTabs -> f:count()} > 1">
+                            <div class="tabs d-flex">
+                                <f:for each="{siteTabs}" iteration="i" as="tab">
+                                    <div class="tab my-2{f:if(condition: '!{i.isFirst}', then: ' ms-2')}">
+                                        <f:variable name="rootLine" value="" />
+                                        <f:for as="page" each="{tab.rootLine}" iteration="i">
+                                            <f:if condition="{page.title}">
+                                                <f:if condition="{i.isLast}">
+                                                    <f:then><f:variable name="rootLine" value="{rootLine}{page.title}" /></f:then>
+                                                    <f:else>
+                                                        <f:variable name="rootLine" value="{rootLine}{page.title} -> " />
+                                                    </f:else>
+                                                </f:if>
+                                            </f:if>
+                                        </f:for>
+                                        <a class="btn btn-default{f:if(condition: tab.active, then: ' active')}" href="{tab.url}">
+                                            <f:if condition="{tab.active}">
+                                                <f:then><core:icon identifier="actions-check-square" /></f:then>
+                                                <f:else><core:icon identifier="actions-square" /></f:else>
+                                            </f:if><span class="d-inline-block ms-1">{rootLine}</span>
+                                        </a>
+                                    </div>
+                                </f:for>
+                            </div>
+                        </f:if>
+                    </div>
                 </div>
             </f:for>
-        </f:if>
-    </f:for>
-    <typo3-backend-editable-page-title
-            pageTitle="{pageTitle}"
-            pageId="{pageId}"
-    >
-    {pageTitle}
-    </typo3-backend-editable-page-title>
+        </div>
+    </f:if>
+
+    <div class="my-4">
+    </div>
+
     <f:format.raw>{additionalContentTop}</f:format.raw>
     <f:format.raw>{languageSelectorHtml}</f:format.raw>
     <f:format.raw>{searchBoxHtml}</f:format.raw>

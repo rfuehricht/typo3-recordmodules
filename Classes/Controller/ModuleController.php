@@ -219,6 +219,7 @@ final class ModuleController extends RecordListController
                 $tabs[$identifier][$pid] = $page;
 
                 $rootLine = BackendUtility::BEgetRootLine($pid, '', true);
+                ksort($rootLine);
                 $tabs[$identifier][$pid]['rootLine'] = $rootLine;
 
                 if ($pid === $this->id) {
