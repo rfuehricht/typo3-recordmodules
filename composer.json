@@ -1,0 +1,32 @@
+{
+  "name": "rfuehricht/recordmodules",
+  "type": "typo3-cms-extension",
+  "description": "Adds backend modules for configured record types.",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "Reinhard Führicht",
+      "email": "r.fuehricht@gmail.com"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://composer.typo3.org/"
+    }
+  ],
+  "require": {
+    "php": "^8.2",
+    "typo3/cms-backend": "^12.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Rfuehricht\\Recordmodules\\": "Classes/"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "recordmodules"
+    }
+  }
+}

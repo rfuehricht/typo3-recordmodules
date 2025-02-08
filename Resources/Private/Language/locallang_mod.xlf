@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:recordmodules/Resources/Private/Language/locallang_mod.xlf" date="2025-02-07T14:00:00Z" product-name="recordmodules">
+		<header/>
+		<body>
+			<trans-unit id="mlang_tabs_tab">
+				<source>Records</source>
+			</trans-unit>
+			<trans-unit id="noPagesForThisTable">
+				<source>No source pages configured or none of the configured pages is accessible for you.</source>
+			</trans-unit>
+			<trans-unit id="noAccess">
+				<source>You have to read access for records of this type.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
