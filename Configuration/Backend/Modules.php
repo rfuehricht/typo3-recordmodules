@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 $hasActiveModules = false;
+
+$modules = [];
 foreach ($GLOBALS['TCA'] as $table => $settings) {
     if (isset($settings['ctrl']['recordModule']['activate']) &&
         boolval($settings['ctrl']['recordModule']['activate']) === true) {
@@ -13,9 +15,11 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
             'access' => 'user',
             'workspaces' => 'live',
             'path' => '/module/record/' . $table,
-            'labels' => $GLOBALS['TCA'][$table]['ctrl']['title'],
+            'labels' => [
+                'title' => $GLOBALS['TCA'][$table]['ctrl']['title']
+            ],
             'iconIdentifier' => $GLOBALS['TCA'][$table]['ctrl']['iconIdentifier'] ?? array_shift($typeIcons),
-            'icon' => $GLOBALS['TCA'][$table]['ctrl']['icon'] ?? '',
+            'icon' => $GLOBALS['TCA'][$table]['ctrl']['icon'] ?? $GLOBALS['TCA'][$table]['ctrl']['iconfile'] ?? '',
             'extensionName' => 'Recordmodules',
             'navigationComponent' => !isset($GLOBALS['TCA'][$table]['ctrl']['recordModule']['pids']) ? '@typo3/backend/page-tree/page-tree-element' : '',
 

@@ -3,3 +3,8 @@ services:
     autowire: true
     autoconfigure: true
     public: false
+
+  Rfuehricht\Recordmodules\:
+    resource: '../Classes/*'
+    autowire: true
+    public: true
