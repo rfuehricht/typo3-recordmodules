@@ -37,7 +37,10 @@ final class ModuleController extends RecordListController
 
         /** @var ModuleInterface $module */
         $module = $route->getOption('module');
+
+        //Do not allow override of default settings from pageTS or anywhere else
         $this->moduleData->set('table', $module->getDefaultModuleData()['table']);
+        $this->moduleData->set('pids', $module->getDefaultModuleData()['pids']);
 
         $languageService = $this->getLanguageService();
         $backendUser = $this->getBackendUserAuthentication();
@@ -50,16 +53,16 @@ final class ModuleController extends RecordListController
 
         $this->id = (int)($parsedBody['id'] ?? $queryParams['id'] ?? '');
         $pids = [];
-        if (isset($GLOBALS['TCA'][$currentTable]['ctrl']['recordModule']['pids'])) {
-            if (is_array($GLOBALS['TCA'][$currentTable]['ctrl']['recordModule']['pids'])) {
-                $pids = $GLOBALS['TCA'][$currentTable]['ctrl']['recordModule']['pids'];
+        if ($this->moduleData->get('pids')) {
+            if (is_array($this->moduleData->get('pids'))) {
+                $pids = $this->moduleData->get('pids');
                 foreach ($pids as &$pid) {
                     $pid = intval($pid);
                 }
 
                 reset($pids);
             } else {
-                $pids = GeneralUtility::intExplode(',', (string)$GLOBALS['TCA'][$currentTable]['ctrl']['recordModule']['pids'], true);
+                $pids = GeneralUtility::intExplode(',', (string)$this->moduleData->get('pids'), true);
             }
         } elseif ((isset($parsedBody['id']) && $parsedBody['id'] !== '') || (isset($queryParams['id']) && $queryParams['id'] !== '')) {
             $pids = [
@@ -94,8 +97,6 @@ final class ModuleController extends RecordListController
         $cmd = (string)($parsedBody['cmd'] ?? $queryParams['cmd'] ?? '');
         $siteLanguages = $request->getAttribute('site')->getAvailableLanguages($this->getBackendUserAuthentication(), false, $this->id);
 
-        // Loading module configuration, clean up settings, current page and page access
-        $this->modTSconfig = BackendUtility::getPagesTSconfig($this->id)['mod.']['web_list.'] ?? [];
         $pageinfo = BackendUtility::readPageAccess($this->id, $perms_clause);
         $access = is_array($pageinfo);
         $this->pageInfo = is_array($pageinfo) ? $pageinfo : [];
@@ -114,23 +115,9 @@ final class ModuleController extends RecordListController
             return $view->renderResponse('List');
         }
 
-        // Check if Clipboard is allowed to be shown:
-        if (($this->modTSconfig['enableClipBoard'] ?? '') === 'activated') {
-            $this->allowClipboard = false;
-            $this->moduleData->set('clipBoard', true);
-        } elseif (($this->modTSconfig['enableClipBoard'] ?? '') === 'selectable') {
-            $this->allowClipboard = true;
-        } elseif (($this->modTSconfig['enableClipBoard'] ?? '') === 'deactivated') {
-            $this->allowClipboard = false;
-            $this->moduleData->set('clipBoard', false);
-        }
+        $this->moduleData->set('clipBoard', true);
 
-        // Check if SearchBox is allowed to be shown:
-        if (!($this->modTSconfig['disableSearchBox'] ?? false)) {
-            $this->allowSearch = true;
-        } elseif ($this->modTSconfig['disableSearchBox'] ?? false) {
-            $this->allowSearch = false;
-        }
+        $this->allowSearch = true;
 
 
         $this->modTSconfig['searchLevel.'] = [
@@ -157,15 +144,14 @@ final class ModuleController extends RecordListController
         unset($tablesToHide[array_search($currentTable, $tablesToHide)]);
 
         $dbList->hideTables = implode(',', $tablesToHide);
-        $dbList->hideTranslations = (string)($this->modTSconfig['hideTranslations'] ?? '');
-        $dbList->tableTSconfigOverTCA = $this->modTSconfig['table.'] ?? [];
+        $dbList->hideTranslations = false;
+        $dbList->tableTSconfigOverTCA = [];
         $dbList->allowedNewTables = [$currentTable];
-        //$dbList->deniedNewTables = GeneralUtility::trimExplode(',', $this->modTSconfig['deniedNewTables'] ?? '', true);
         $dbList->pageRow = $this->pageInfo;
         $dbList->modTSconfig = $this->modTSconfig;
         $dbList->setLanguagesAllowedForUser($siteLanguages);
 
-        $clipboard = $this->initializeClipboard($request, (bool)$this->moduleData->get('clipBoard'));
+        $clipboard = $this->initializeClipboard($request, true);
         $dbList->clipObj = $clipboard;
         $additionalRecordListEvent = $this->eventDispatcher->dispatch(new RenderAdditionalContentToRecordListEvent($request));
 
