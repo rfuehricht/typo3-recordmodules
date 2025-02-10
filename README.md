@@ -39,3 +39,10 @@ if **not** set, the module will show the normal page tree for the user to select
 `title` is optional. Default is the title of the table as specified in TCA. Use a string or a LLL reference.
 
 `icon` and `iconIdentifier` are optional. Default is the icon as specified in TCA.
+
+### Via configuration records
+
+On root level you can create configuration records for each desired backend module.
+
+The settings are nearly the same as the settings in TCA.
+
