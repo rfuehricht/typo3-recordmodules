@@ -38,7 +38,10 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
 
         $sorting = $localSettings['sorting'] ?? 9999;
 
-        $title = $localSettings['title'] ?? $GLOBALS['TCA'][$table]['ctrl']['title'];
+        $title = $GLOBALS['TCA'][$table]['ctrl']['title'];
+        if (isset($localSettings['title']) && strlen(trim($localSettings['title'])) > 0) {
+            $title = trim($localSettings['title']);
+        }
 
         if (isset($localSettings['root_level']) && intval($localSettings['root_level']) === 1) {
             $localSettings['pids'] = '0';
@@ -83,9 +86,10 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
                 $localModuleConfiguration['icon'] = $iconFile->getPublicUrl();
             }
 
-        } elseif (isset($localSettings['icon'])) {
+        } elseif (isset($localSettings['icon']) && strlen((string)$localSettings['icon']) > 0
+            && (string)$localSettings['icon'] !== '0') {
             $localModuleConfiguration['icon'] = $localSettings['icon'];
-        } elseif (isset($localSettings['iconIdentifier'])) {
+        } elseif (isset($localSettings['iconIdentifier']) && strlen($localSettings['iconIdentifier']) > 0) {
             $localModuleConfiguration['iconIdentifier'] = $localSettings['iconIdentifier'];
         } elseif (isset($GLOBALS['TCA'][$table]['ctrl']['iconfile'])) {
             $localModuleConfiguration['icon'] = $GLOBALS['TCA'][$table]['ctrl']['iconfile'];
