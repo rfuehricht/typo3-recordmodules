@@ -8,7 +8,7 @@ $languagePrefix = 'LLL:EXT:recordmodules/Resources/Private/Language/locallang_tc
 
 return [
     'ctrl' => [
-        'title' => $languagePrefix . 'title',
+        'title' => $languagePrefix . 'tcaTitle',
         'label' => 'tablename',
         'label_alt' => 'title',
         'label_alt_force' => true,

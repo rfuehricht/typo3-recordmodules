@@ -3,7 +3,7 @@
 	<file source-language="en" datatype="plaintext" original="EXT:recordmodules/Resources/Private/Language/locallang_mod.xlf" date="2025-02-07T14:00:00Z" product-name="recordmodules">
 		<header/>
 		<body>
-			<trans-unit id="tx_recordmodules_config.title">
+			<trans-unit id="tx_recordmodules_config.tcaTitle">
 				<source>Module Configuration</source>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.tablename">
