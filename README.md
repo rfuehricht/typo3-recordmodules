@@ -5,11 +5,7 @@ Editors do not have to switch to module "List" and search for the correct sys fo
 
 ## How to configure
 
-Order of the settings:
-
-TCA -> Extension Settings -> TypoScript Settings
-
-So, TypoScript will override Extension Settings which override TCA settings.
+Configuration in database records overrides settings in TCA.
 
 ### Via TCA
 
