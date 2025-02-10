@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:recordmodules/Resources/Private/Language/locallang_mod.xlf" date="2025-02-07T14:00:00Z" product-name="recordmodules">
+		<header/>
+		<body>
+			<trans-unit id="tx_recordmodules_config.title">
+				<source>Module Configuration</source>
+			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.tablename">
+				<source>Database table to list</source>
+			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.parent">
+				<source>Parent module</source>
+			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.parent.description">
+				<source>Position of the custom module. Default: A new custom module group "Records".</source>
+			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.pids">
+				<source>Pages to list</source>
+			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.pids.description">
+				<source>Specify the storage folders or pages to be available in the backend module. If empty, a page tree is shown to the user to select a desired page.</source>
+			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.root_level">
+				<source>List only root level records?</source>
+			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.root_level.description">
+				<source>If set, no page tree is shown and any setting in "pids" has no effect. The module will only select record from root level (pid = 0).</source>
+			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.title">
+				<source>Custom title</source>
+			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.title.description">
+				<source>Custom title for the module. Default: Title of the table as defined in TCA.</source>
+			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.iconIdentifier">
+				<source>Icon identifier</source>
+			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.iconIdentifier.description">
+				<source>Custom icon identifier for the module. Default: Icon of the table as defined in TCA.</source>
+			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.icon">
+				<source>Icon</source>
+			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.icon.description">
+				<source>Custom icon for the module. Default: Icon of the table as defined in TCA.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

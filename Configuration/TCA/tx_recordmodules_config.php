@@ -4,9 +4,11 @@ if (!defined('TYPO3')) {
     die('Access denied.');
 }
 
+$languagePrefix = 'LLL:EXT:recordmodules/Resources/Private/Language/locallang_tca.xlf:tx_recordmodules_config.';
+
 return [
     'ctrl' => [
-        'title' => 'Record Module Configuration',
+        'title' => $languagePrefix . 'title',
         'label' => 'tablename',
         'label_alt' => 'title',
         'label_alt_force' => true,
@@ -32,7 +34,7 @@ return [
     'columns' => [
         'hidden' => $GLOBALS['TCA']['tt_content']['columns']['hidden'],
         'tablename' => [
-            'label' => 'Tabelle',
+            'label' => $languagePrefix . 'tablename',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -44,7 +46,8 @@ return [
             ]
         ],
         'parent' => [
-            'label' => 'Position',
+            'label' => $languagePrefix . 'parent',
+            'description' => $languagePrefix . 'parent.description',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -57,7 +60,8 @@ return [
             ]
         ],
         'pids' => [
-            'label' => 'Seiten',
+            'label' => $languagePrefix . 'pids',
+            'description' => $languagePrefix . 'pids.description',
             'config' => [
                 'type' => 'group',
                 'allowed' => 'pages',
@@ -72,29 +76,29 @@ return [
             ]
         ],
         'root_level' => [
-            'label' => 'List Records from root level',
-            'description' => 'If set, "pids" will not be taken into account. Backend module will only list records from root level without showing page tree.',
+            'label' => $languagePrefix . 'root_level',
+            'description' => $languagePrefix . 'root_level.description',
             'config' => [
                 'type' => 'check',
             ]
         ],
         'title' => [
-            'label' => 'Title',
-            'description' => 'Custom title for the module. Default: Title of the table as defined in TCA',
+            'label' => $languagePrefix . 'title',
+            'description' => $languagePrefix . 'title.description',
             'config' => [
                 'type' => 'input'
             ]
         ],
         'iconIdentifier' => [
-            'label' => 'Icon Identifier',
-            'description' => 'Custom icon identifier for the module. Default: Icon of the table as defined in TCA',
+            'label' => $languagePrefix . 'iconIdentifier',
+            'description' => $languagePrefix . 'iconIdentifier.description',
             'config' => [
                 'type' => 'input'
             ]
         ],
         'icon' => [
-            'label' => 'Icon',
-            'description' => 'Custom icon for the module. Overrides iconIdentifier if set. Default: Icon of the table as defined in TCA',
+            'label' => $languagePrefix . 'icon',
+            'description' => $languagePrefix . 'icon.description',
             'config' => [
                 'type' => 'file',
                 'max' => 1,
