@@ -53,22 +53,27 @@ final class ModuleController extends RecordListController
 
         $this->id = (int)($parsedBody['id'] ?? $queryParams['id'] ?? '');
         $pids = [];
-        if ($this->moduleData->get('pids')) {
-            if (is_array($this->moduleData->get('pids'))) {
-                $pids = $this->moduleData->get('pids');
-                foreach ($pids as &$pid) {
-                    $pid = intval($pid);
-                }
-
-                reset($pids);
-            } else {
-                $pids = GeneralUtility::intExplode(',', (string)$this->moduleData->get('pids'), true);
+        if (is_array($this->moduleData->get('pids')) && !empty($this->moduleData->get('pids'))) {
+            $pids = $this->moduleData->get('pids');
+            foreach ($pids as &$pid) {
+                $pid = intval($pid);
             }
+
+            reset($pids);
+        } elseif (!is_array($this->moduleData->get('pids')) && strlen(trim($this->moduleData->get('pids'))) > 0) {
+            $pids = GeneralUtility::intExplode(',', (string)$this->moduleData->get('pids'), false);
+            foreach ($pids as $idx => $pid) {
+                if (strlen(trim($pid)) === 0) {
+                    unset($pids[$idx]);
+                }
+            }
+            reset($pids);
         } elseif ((isset($parsedBody['id']) && $parsedBody['id'] !== '') || (isset($queryParams['id']) && $queryParams['id'] !== '')) {
             $pids = [
                 $this->id
             ];
         }
+
         unset($pid);
 
 
@@ -152,6 +157,8 @@ final class ModuleController extends RecordListController
         $dbList->setLanguagesAllowedForUser($siteLanguages);
 
         $clipboard = $this->initializeClipboard($request, true);
+
+
         $dbList->clipObj = $clipboard;
         $additionalRecordListEvent = $this->eventDispatcher->dispatch(new RenderAdditionalContentToRecordListEvent($request));
 

@@ -2,77 +2,46 @@
 
 declare(strict_types=1);
 
-use TYPO3\CMS\Core\TypoScript\TypoScriptService;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
-
-$backendConfigurationManager = GeneralUtility::makeInstance(BackendConfigurationManager::class);
-$tsSetup = $backendConfigurationManager->getTypoScriptSetup();
-
-$settingsFromTypoScript = [];
-if (isset($tsSetup['module.']['tx_recordmodules.'])) {
-    $typoscriptService = GeneralUtility::makeInstance(TypoScriptService::class);
-    $settingsFromTypoScript = $typoscriptService->convertTypoScriptArrayToPlainArray($tsSetup['module.']['tx_recordmodules.']);
-}
+use TYPO3\CMS\Core\Database\ConnectionPool;
 
 $modules = [];
-$extensionConfiguration = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['recordmodules'] ?? [];
-if ($extensionConfiguration
-    && isset($extensionConfiguration['tablesAndPids'])
-    && strlen(trim($extensionConfiguration['tablesAndPids'])) > 0) {
 
-    $extensionConfiguration['tables'] = [];
+$qb = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ConnectionPool::class)
+    ->getQueryBuilderForTable('tx_recordmodules_config');
+$configurationRecords = $qb->select('*')
+    ->from('tx_recordmodules_config')
+    ->executeQuery()->fetchAllAssociative();
 
-    $settingsParts = GeneralUtility::trimExplode('|', $extensionConfiguration['tablesAndPids'], true);
-    foreach ($settingsParts as $setting) {
-        $parts = GeneralUtility::trimExplode(':', $setting, true);
-        $extensionConfiguration['tables'][$parts[0]] = [
-            'activate' => 1,
-            'pids' => $parts[1]
-        ];
-    }
-    unset($extensionConfiguration['tablesAndPids']);
+$configurationRecordsIndexed = [];
+foreach ($configurationRecords as $record) {
+    $configurationRecordsIndexed[$record['tablename']] = $record;
 }
-
-
-\TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule(
-    $extensionConfiguration,
-    $settingsFromTypoScript,
-    true
-);
-
-
-$tableSettingsFromExtensionConfiguration = $extensionConfiguration['tables'];
-
-$addToWebModule = $extensionConfiguration['addToWebModule'] ?? false;
-
-$parent = ($addToWebModule ? 'web' : 'recordmodules');
-
-$extensionConfiguration['sorting'] = ($extensionConfiguration['sorting'] ? GeneralUtility::trimExplode(',', $extensionConfiguration['sorting']) : []);
-
-
-$modulesToAdd = [];
+$createCustomModuleGroup = false;
 foreach ($GLOBALS['TCA'] as $table => $settings) {
 
     $localSettings = $settings['ctrl']['recordModule'] ?? [];
-
-    if (isset($tableSettingsFromExtensionConfiguration[$table])) {
-        \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule(
-            $localSettings,
-            $tableSettingsFromExtensionConfiguration[$table],
-            true
-        );
+    if (array_key_exists($table, $configurationRecordsIndexed)) {
+        $localSettings = $configurationRecordsIndexed[$table];
+        $localSettings['activate'] = true;
     }
-
 
     if ((isset($localSettings['activate']) &&
         boolval($localSettings['activate']) === true)) {
 
         $typeIcons = $GLOBALS['TCA'][$table]['ctrl']['typeicon_classes'] ?? [];
 
-        $sorting = array_search($table, $extensionConfiguration['sorting']);
-        if ($sorting === false) {
-            $sorting = 9999;
+        $parent = (isset($localSettings['parent']) && trim($localSettings['parent']) !== '' ? trim($localSettings['parent']) : 'recordmodules');
+
+        if ($parent === 'recordmodules') {
+            $createCustomModuleGroup = true;
+        }
+
+        $sorting = $localSettings['sorting'] ?? 9999;
+
+        $title = $localSettings['title'] ?? $GLOBALS['TCA'][$table]['ctrl']['title'];
+
+        if (isset($localSettings['root_level']) && intval($localSettings['root_level']) === 1) {
+            $localSettings['pids'] = '0';
         }
 
         $localModuleConfiguration = [
@@ -83,7 +52,7 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
             'workspaces' => 'live',
             'path' => '/module/record/' . $table,
             'labels' => [
-                'title' => $GLOBALS['TCA'][$table]['ctrl']['title']
+                'title' => $title
             ],
             'extensionName' => 'Recordmodules',
             'navigationComponent' => !isset($localSettings['pids']) ? '@typo3/backend/page-tree/page-tree-element' : '',
@@ -101,22 +70,31 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
             ],
         ];
 
-        if (isset($localSettings['title'])) {
-            $localModuleConfiguration['labels']['title'] = $localSettings['title'];
-        }
+        if (isset($localSettings['icon']) && intval($localSettings['icon']) > 0) {
+            $fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\FileRepository::class);
+            $files = $fileRepository->findByRelation(
+                tableName: 'tx_recordmodules_config',
+                fieldName: 'icon',
+                uid: $localSettings['uid']
+            );
+            if ($files) {
+                /** @var \TYPO3\CMS\Core\Resource\FileReference $iconFile */
+                $iconFile = reset($files);
+                $localModuleConfiguration['icon'] = $iconFile->getPublicUrl();
+            }
 
-        if (isset($localSettings['icon'])) {
+        } elseif (isset($localSettings['icon'])) {
             $localModuleConfiguration['icon'] = $localSettings['icon'];
         } elseif (isset($localSettings['iconIdentifier'])) {
             $localModuleConfiguration['iconIdentifier'] = $localSettings['iconIdentifier'];
-        } elseif (isset($GLOBALS['TCA'][$table]['ctrl']['iconIdentifier'])) {
-            $localModuleConfiguration['iconIdentifier'] = $GLOBALS['TCA'][$table]['ctrl']['iconIdentifier'];
-        } elseif (isset($GLOBALS['TCA'][$table]['ctrl']['icon'])) {
-            $localModuleConfiguration['icon'] = $GLOBALS['TCA'][$table]['ctrl']['icon'];
         } elseif (isset($GLOBALS['TCA'][$table]['ctrl']['iconfile'])) {
             $localModuleConfiguration['icon'] = $GLOBALS['TCA'][$table]['ctrl']['iconfile'];
         } elseif (count($typeIcons) > 0) {
-            $localModuleConfiguration['iconIdentifier'] = reset($typeIcons);
+            if (isset($typeIcons['default'])) {
+                $localModuleConfiguration['iconIdentifier'] = $typeIcons['default'];
+            } else {
+                $localModuleConfiguration['iconIdentifier'] = reset($typeIcons);
+            }
         }
 
         $modules['recordmodules_module_' . $table] = $localModuleConfiguration;
@@ -130,7 +108,7 @@ if ($modules) {
         return $a['sorting'] <=> $b['sorting'];
     });
 
-    if ($parent == 'recordmodules') {
+    if ($createCustomModuleGroup) {
         $modules['recordmodules'] = [
             'labels' => 'LLL:EXT:recordmodules/Resources/Private/Language/locallang_mod.xlf',
             'iconIdentifier' => 'actions-brand-typo3',

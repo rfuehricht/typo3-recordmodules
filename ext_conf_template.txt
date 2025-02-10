@@ -1,8 +1,0 @@
-# cat=Settings; type=string; label=Tables and Pids to activate module for.:Syntax: [table]:[pid],[pid],[pid]|[table]:[pid];...
-tablesAndPids =
-
-# cat=Settings; type=boolean; label=Add custom record module to the existing module "Web" (after "Page") or add to a custom module setion "Records":Default:false (=Use module setion "Records")
-addToWebModule =
-
-# cat=Settings; type=string; label=Custom sorting of modules.:Comma separated list of table names.
-sorting =
