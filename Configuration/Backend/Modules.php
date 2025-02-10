@@ -59,7 +59,7 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
             ],
             'extensionName' => 'Recordmodules',
             'navigationComponent' => !isset($localSettings['pids']) ? '@typo3/backend/page-tree/page-tree-element' : '',
-
+            'inheritNavigationComponentFromMainModule' => false,
             'routes' => [
                 '_default' => [
                     'target' => \Rfuehricht\Recordmodules\Controller\ModuleController::class . '::mainAction',
@@ -100,6 +100,7 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
                 $localModuleConfiguration['iconIdentifier'] = reset($typeIcons);
             }
         }
+
 
         $modules['recordmodules_module_' . $table] = $localModuleConfiguration;
     }
