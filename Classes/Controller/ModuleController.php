@@ -120,8 +120,6 @@ final class ModuleController extends RecordListController
             return $view->renderResponse('List');
         }
 
-        $this->moduleData->set('clipBoard', true);
-
         $this->allowSearch = true;
 
 
@@ -133,7 +131,6 @@ final class ModuleController extends RecordListController
 
         // Overwrite to show search on search request
         if (!empty($this->searchTerm)) {
-            $this->allowSearch = true;
             $this->moduleData->set('searchBox', true);
         }
 
