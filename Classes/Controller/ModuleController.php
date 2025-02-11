@@ -142,21 +142,23 @@ final class ModuleController extends RecordListController
         $dbList->showClipboardActions = true;
         $dbList->disableSingleTableView = true;
         $dbList->listOnlyInSingleTableMode = false;
+
+        // Only list current table
         $tablesToHide = array_keys($GLOBALS['TCA']);
         unset($tablesToHide[array_search($currentTable, $tablesToHide)]);
-
         $dbList->hideTables = implode(',', $tablesToHide);
+        $dbList->allowedNewTables = [$currentTable];
+
         $dbList->hideTranslations = false;
         $dbList->tableTSconfigOverTCA = [];
-        $dbList->allowedNewTables = [$currentTable];
+
         $dbList->pageRow = $this->pageInfo;
         $dbList->modTSconfig = $this->modTSconfig;
         $dbList->setLanguagesAllowedForUser($siteLanguages);
 
-        $clipboard = $this->initializeClipboard($request, true);
-
-
+        $clipboard = $this->initializeClipboard($request, (bool)$this->moduleData->get('clipBoard'));
         $dbList->clipObj = $clipboard;
+
         $additionalRecordListEvent = $this->eventDispatcher->dispatch(new RenderAdditionalContentToRecordListEvent($request));
 
 
@@ -232,7 +234,6 @@ final class ModuleController extends RecordListController
             'tabs' => $tabs,
             'pageTitle' => $title,
             'tableTitle' => $tableTitle,
-            'isPageEditable' => $this->isPageEditable(),
             'additionalContentTop' => $additionalRecordListEvent->getAdditionalContentAbove(),
             'searchBoxHtml' => $searchBoxHtml,
             'tableListHtml' => $tableListHtml,
@@ -242,7 +243,13 @@ final class ModuleController extends RecordListController
         return $view->renderResponse('List');
     }
 
-    protected function addFlashMessage(ModuleTemplate $view, string $key, ContextualFeedbackSeverity $severity = ContextualFeedbackSeverity::INFO)
+    /**
+     * @param ModuleTemplate $view
+     * @param string $key
+     * @param ContextualFeedbackSeverity $severity
+     * @return void
+     */
+    protected function addFlashMessage(ModuleTemplate $view, string $key, ContextualFeedbackSeverity $severity = ContextualFeedbackSeverity::INFO): void
     {
         $languageService = $this->getLanguageService();
         $message = $languageService->sL('LLL:EXT:recordmodules/Resources/Private/Language/locallang_mod.xlf:' . $key);
@@ -251,6 +258,10 @@ final class ModuleController extends RecordListController
 
     /**
      * If new records can be created on this page, create a button
+     *
+     * @param $returnUrl
+     * @return ButtonInterface|null
+     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
     protected function createActionButtonNewRecord($returnUrl): ?ButtonInterface
     {
