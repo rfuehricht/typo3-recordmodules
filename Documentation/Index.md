@@ -18,7 +18,7 @@ See also [Installing extensions, TYPO3 Getting started](https://docs.typo3.org/p
 
 ## Configuration
 
-onfiguration in database records overrides settings in TCA.
+Configuration in database records overrides settings in TCA.
 
 ### Via TCA
 
