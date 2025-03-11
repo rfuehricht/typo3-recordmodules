@@ -14,12 +14,15 @@ use TYPO3\CMS\Backend\Routing\Route;
 use TYPO3\CMS\Backend\Template\Components\Buttons\ButtonInterface;
 use TYPO3\CMS\Backend\Template\Components\Buttons\GenericButton;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 #[AsController]
@@ -27,8 +30,10 @@ final class ModuleController extends RecordListController
 {
 
 
+
     public function mainAction(ServerRequestInterface $request): ResponseInterface
     {
+
 
         /** @var ModuleData moduleData */
         $this->moduleData = $request->getAttribute('moduleData');
@@ -78,9 +83,9 @@ final class ModuleController extends RecordListController
 
 
         foreach ($pids as $idx => $pid) {
-            $pageinfo = BackendUtility::readPageAccess($pid, $perms_clause);
+            $pageInfo = BackendUtility::readPageAccess($pid, $perms_clause);
 
-            $access = is_array($pageinfo);
+            $access = is_array($pageInfo);
             if (!$access) {
                 unset($pids[$idx]);
             }
@@ -102,12 +107,18 @@ final class ModuleController extends RecordListController
         $cmd = (string)($parsedBody['cmd'] ?? $queryParams['cmd'] ?? '');
         $siteLanguages = $request->getAttribute('site')->getAvailableLanguages($this->getBackendUserAuthentication(), false, $this->id);
 
-        $pageinfo = BackendUtility::readPageAccess($this->id, $perms_clause);
-        $access = is_array($pageinfo);
-        $this->pageInfo = is_array($pageinfo) ? $pageinfo : [];
-        $this->pagePermissions = new Permission($backendUser->calcPerms($pageinfo));
+        $pageInfo = BackendUtility::readPageAccess($this->id, $perms_clause);
+        $access = is_array($pageInfo);
+        $this->pageInfo = is_array($pageInfo) ? $pageInfo : [];
+        $this->pagePermissions = new Permission($backendUser->calcPerms($pageInfo));
 
         $view = $this->moduleTemplateFactory->create($request);
+
+        $view->assignMultiple([
+            'pageId' => $this->id,
+            'table' => $this->table,
+            'tabs' => []
+        ]);
 
         if (empty($pids)) {
             $this->addFlashMessage($view, 'noPagesForThisTable', ContextualFeedbackSeverity::ERROR);
@@ -172,7 +183,7 @@ final class ModuleController extends RecordListController
             $tableListHtml = $dbList->generateList();
         }
 
-        $title = $pageinfo['title'] ?? '';
+        $title = $pageInfo['title'] ?? '';
 
         $searchBoxHtml = '';
         if ($this->allowSearch && $this->moduleData->get('searchBox') && ($tableListHtml || !empty($this->searchTerm))) {
@@ -187,8 +198,8 @@ final class ModuleController extends RecordListController
             $this->addNoRecordsFlashMessage($view, $this->table);
             $tableListHtml = $this->createActionButtonNewRecord($dbList->listURL());
         }
-        if ($pageinfo) {
-            $view->getDocHeaderComponent()->setMetaInformation($pageinfo);
+        if ($pageInfo) {
+            $view->getDocHeaderComponent()->setMetaInformation($pageInfo);
         }
 
         $this->modTSconfig['noCreateRecordsLink'] = true;

@@ -32,7 +32,6 @@ return [
         ]
     ],
     'columns' => [
-        'hidden' => $GLOBALS['TCA']['tt_content']['columns']['hidden'],
         'tablename' => [
             'label' => $languagePrefix . 'tablename',
             'config' => [

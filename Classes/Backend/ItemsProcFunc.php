@@ -4,6 +4,7 @@ namespace Rfuehricht\Recordmodules\Backend;
 
 use TYPO3\CMS\Backend\Module\Module;
 use TYPO3\CMS\Backend\Module\ModuleProvider;
+use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ItemsProcFunc
@@ -35,6 +36,7 @@ class ItemsProcFunc
     {
         $modules = GeneralUtility::makeInstance(ModuleProvider::class)
             ->getModules();
+
 
         $params['items'][] =
             [

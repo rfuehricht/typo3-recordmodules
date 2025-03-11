@@ -39,7 +39,6 @@
 <f:section name="Content">
 
     <h1>{tableTitle}</h1>
-
     <f:if condition="{tabs -> f:count()} > 0 && {f:first(value: tabs) -> f:count()} > 1">
         <div class="card-container">
             <f:for as="siteTabs" key="siteIdentifier" each="{tabs}">
