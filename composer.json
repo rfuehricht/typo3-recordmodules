@@ -3,6 +3,9 @@
   "type": "typo3-cms-extension",
   "description": "Adds backend modules for configured record types.",
   "version": "1.0.0",
+  "license": [
+    "GPL-3.0-or-later"
+  ],
   "authors": [
     {
       "name": "Reinhard Führicht",
