@@ -7,6 +7,8 @@ Editors do not have to switch to module "List" and search for the correct sys fo
 
 Configuration in database records overrides settings in TCA.
 
+After creating of a configuration record or any change in the configuration, the system caches must be cleared and the backend must be reloaded.
+
 ### Via TCA
 
 In your site package, use TCA overrides to activate a custom module for a record type.
@@ -25,7 +27,7 @@ $GLOBALS['TCA']['sys_category']['ctrl']['recordModule'] = [
 ```
 
 `parent` is optional and specifies where to put the module. Default is a new custom module group "Records".
- 
+
 `pids` is optional and can be a comma separated string of page ids, a single id or an array of ids.
 If set, the module will only list records of these page ids (if the current user has access).
 if **not** set, the module will show the normal page tree for the user to select a page. Note that only records of the current table are listed in the module.
