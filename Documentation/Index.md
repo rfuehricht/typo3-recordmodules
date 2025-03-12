@@ -17,7 +17,7 @@ composer req rfuehricht/recordmodules
 
 Configuration in database records overrides settings in TCA.
 
-After creating of a configuration record or any change in the configuration, the system caches must be cleared and the backend must be reloaded.
+After creating a configuration record or any change in the configuration, the system caches must be cleared and the backend must be reloaded.
 
 ### Via TCA
 
