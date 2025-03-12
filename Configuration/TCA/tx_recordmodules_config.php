@@ -1,5 +1,7 @@
 <?php
 
+use Rfuehricht\Recordmodules\Backend\ItemsProcFunc;
+
 if (!defined('TYPO3')) {
     die('Access denied.');
 }
@@ -37,7 +39,7 @@ return [
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
-                'itemsProcFunc' => \Rfuehricht\Recordmodules\Backend\ItemsProcFunc::class . '->getAllTables',
+                'itemsProcFunc' => ItemsProcFunc::class . '->getAllTables',
                 'eval' => 'required',
                 'sortItems' => [
                     'label' => 'asc'
@@ -50,7 +52,7 @@ return [
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
-                'itemsProcFunc' => \Rfuehricht\Recordmodules\Backend\ItemsProcFunc::class . '->getAllToplevelModules',
+                'itemsProcFunc' => ItemsProcFunc::class . '->getAllToplevelModules',
                 'eval' => 'required',
                 'default' => 'recordmodules',
                 'sortItems' => [

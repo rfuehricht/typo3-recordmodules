@@ -3,6 +3,8 @@
 This extension makes it possible to configure backend modules for some type of records.
 Editors do not have to switch to module "List" and search for the correct sys folder to find the records.
 
+The generated backend modules can be shown/hidden for editors using the normal ACL settings in backend usergroup recods.
+
 ## Installation
 
 Install the extension via Composer:
@@ -10,11 +12,6 @@ Install the extension via Composer:
 ```
 composer req rfuehricht/recordmodules
 ```
-
-Or download the extension from https://extensions.typo3.org/package/recordmodules and install it in
-the Extension Manager.
-
-See also [Installing extensions, TYPO3 Getting started](https://docs.typo3.org/permalink/t3start:installing-extensions)
 
 ## Configuration
 
@@ -57,4 +54,4 @@ The settings are nearly the same as the settings in TCA.
 
 ## Report issues
 
-You can report issues at https://github.com/rfuehricht/recordmodules/issues.
+You can report issues at https://github.com/rfuehricht/typo3-recordmodules/issues.
