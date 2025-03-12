@@ -15,6 +15,9 @@
 			<trans-unit id="tx_recordmodules_config.parent.description">
 				<source>Position of the custom module. Default: A new custom module group "Records".</source>
 			</trans-unit>
+			<trans-unit id="tx_recordmodules_config.parent.default">
+				<source>Records</source>
+			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.pids">
 				<source>Pages to list</source>
 			</trans-unit>

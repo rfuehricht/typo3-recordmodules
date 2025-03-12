@@ -4,7 +4,6 @@ namespace Rfuehricht\Recordmodules\Backend;
 
 use TYPO3\CMS\Backend\Module\Module;
 use TYPO3\CMS\Backend\Module\ModuleProvider;
-use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ItemsProcFunc
@@ -40,8 +39,8 @@ class ItemsProcFunc
 
         $params['items'][] =
             [
-                'value' => '',
-                'label' => ''
+                'value' => 'recordmodules',
+                'label' => 'LLL:EXT:recordmodules/Resources/Private/Language/locallang_tca.xlf:tx_recordmodules_config.parent.default'
             ];
         foreach ($modules as $module) {
             /** @var Module $module */
