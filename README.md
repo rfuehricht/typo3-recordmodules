@@ -3,6 +3,10 @@
 This extension makes it possible to configure backend modules for some type of records.
 Editors do not have to switch to module "List" and search for the correct sys folder to find the records.
 
+![Example of modules](Documentation/Images/module.png "Custom modules")
+
+![Example of a custom module](Documentation/Images/module2.png "Category module view")
+
 ## How to configure
 
 Configuration in database records overrides settings in TCA.
@@ -44,3 +48,4 @@ On root level you can create configuration records for each desired backend modu
 
 The settings are nearly the same as the settings in TCA.
 
+![Example of a configuration record listing backend users](Documentation/Images/record.png "Configuration record")
