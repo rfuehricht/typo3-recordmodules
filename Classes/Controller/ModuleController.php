@@ -123,7 +123,7 @@ final class ModuleController extends RecordListController
 
         }
 
-        if (!$backendUser->isAdmin() && !$backendUser->check('tables_read', $currentTable)) {
+        if (!$backendUser->isAdmin() && !$backendUser->check('tables_select', $currentTable)) {
             $this->addFlashMessage($view, 'noAccess', ContextualFeedbackSeverity::ERROR);
             return $view->renderResponse('List');
         }
