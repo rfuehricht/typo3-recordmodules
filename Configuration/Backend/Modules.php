@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
+use Rfuehricht\Recordmodules\Controller\ModuleController;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Resource\FileReference;
+use TYPO3\CMS\Core\Resource\FileRepository;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 $modules = [];
 
-$qb = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ConnectionPool::class)
+$qb = GeneralUtility::makeInstance(ConnectionPool::class)
     ->getQueryBuilderForTable('tx_recordmodules_config');
 $configurationRecords = $qb->select('*')
     ->from('tx_recordmodules_config')
@@ -58,11 +62,11 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
                 'title' => $title
             ],
             'extensionName' => 'Recordmodules',
-            'navigationComponent' => !isset($localSettings['pids']) ? '@typo3/backend/page-tree/page-tree-element' : '',
+            'navigationComponent' => (!isset($localSettings['pids']) || strlen(trim($localSettings['pids'])) === 0) ? '@typo3/backend/page-tree/page-tree-element' : '',
             'inheritNavigationComponentFromMainModule' => false,
             'routes' => [
                 '_default' => [
-                    'target' => \Rfuehricht\Recordmodules\Controller\ModuleController::class . '::mainAction',
+                    'target' => ModuleController::class . '::mainAction',
                 ],
             ],
             'moduleData' => [
@@ -74,14 +78,14 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
         ];
 
         if (isset($localSettings['icon']) && intval($localSettings['icon']) > 0) {
-            $fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\FileRepository::class);
+            $fileRepository = GeneralUtility::makeInstance(FileRepository::class);
             $files = $fileRepository->findByRelation(
                 tableName: 'tx_recordmodules_config',
                 fieldName: 'icon',
                 uid: $localSettings['uid']
             );
             if ($files) {
-                /** @var \TYPO3\CMS\Core\Resource\FileReference $iconFile */
+                /** @var FileReference $iconFile */
                 $iconFile = reset($files);
                 $localModuleConfiguration['icon'] = $iconFile->getPublicUrl();
             }

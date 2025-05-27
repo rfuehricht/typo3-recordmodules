@@ -26,7 +26,7 @@ class ItemsProcFunc
                 }
             }
 
-            $params['items'][] = ['value' => $table, 'label' => $settings['ctrl']['title'], 'icon' => $icon];
+            $params['items'][] = ['value' => $table, 'label' => $settings['ctrl']['title'] ?? $table, 'icon' => $icon];
         }
 
     }
