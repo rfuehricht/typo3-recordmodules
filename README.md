@@ -25,7 +25,7 @@ $GLOBALS['TCA']['sys_category']['ctrl']['recordModule'] = [
     'parent' => 'web',
     'sorting' => 12,
     'title' => 'LLL:EXT:site_package/Resources/Private/locallang.xlf:myTitle',
-    'icon' => 'EXT:site_package/Resources/Public/Icons/my_icon.svg'
+    'icon' => 'EXT:site_package/Resources/Public/Icons/my_icon.svg',
     'iconIdentifier' => 'my-ext-my-icon'
 ];
 ```

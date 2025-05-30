@@ -8,48 +8,40 @@ use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Resource\FileRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-$modules = [];
 
-$qb = GeneralUtility::makeInstance(ConnectionPool::class)
-    ->getQueryBuilderForTable('tx_recordmodules_config');
-$configurationRecords = $qb->select('*')
-    ->from('tx_recordmodules_config')
-    ->executeQuery()->fetchAllAssociative();
-
-$configurationRecordsIndexed = [];
-foreach ($configurationRecords as $record) {
-    $configurationRecordsIndexed[$record['tablename']] = $record;
-}
-$createCustomModuleGroup = false;
-foreach ($GLOBALS['TCA'] as $table => $settings) {
-
-    $localSettings = $settings['ctrl']['recordModule'] ?? [];
-    if (array_key_exists($table, $configurationRecordsIndexed)) {
-        $localSettings = $configurationRecordsIndexed[$table];
-        $localSettings['activate'] = true;
-    }
-
-    if ((isset($localSettings['activate']) &&
-        boolval($localSettings['activate']) === true)) {
+function registerModule($table, $settings, &$modules): bool
+{
+    $createCustomModuleGroup = false;
+    if ((isset($settings['activate']) &&
+        boolval($settings['activate']) === true)) {
 
         $typeIcons = $GLOBALS['TCA'][$table]['ctrl']['typeicon_classes'] ?? [];
 
-        $parent = (isset($localSettings['parent']) && trim($localSettings['parent']) !== '' ? trim($localSettings['parent']) : 'recordmodules');
+        $parent = (isset($settings['parent']) && trim($settings['parent']) !== '' ? trim($settings['parent']) : 'recordmodules');
 
         if ($parent === 'recordmodules') {
             $createCustomModuleGroup = true;
         }
 
-        $sorting = $localSettings['sorting'] ?? 9999;
+        $sorting = $settings['sorting'] ?? 9999;
 
         $title = $GLOBALS['TCA'][$table]['ctrl']['title'];
-        if (isset($localSettings['title']) && strlen(trim($localSettings['title'])) > 0) {
-            $title = trim($localSettings['title']);
+        if (isset($settings['title']) && strlen(trim($settings['title'])) > 0) {
+            $title = trim($settings['title']);
         }
 
-        if (isset($localSettings['root_level']) && intval($localSettings['root_level']) === 1) {
-            $localSettings['pids'] = '0';
+        if (isset($settings['root_level']) && intval($settings['root_level']) === 1) {
+            $settings['pids'] = '0';
         }
+
+        $originalIdentifier = 'recordmodules_module_' . $table;
+        $path = $table;
+        $identifier = $originalIdentifier;
+        if (isset($modules[$identifier])) {
+            $identifier = $originalIdentifier . '_' . $settings['uid'];
+            $path = $table . $settings['uid'];
+        }
+
 
         $localModuleConfiguration = [
             'parent' => $parent,
@@ -57,12 +49,12 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
             'sorting' => intval($sorting),
             'access' => 'user',
             'workspaces' => 'live',
-            'path' => '/module/record/' . $table,
+            'path' => '/module/record/' . $path,
             'labels' => [
                 'title' => $title
             ],
             'extensionName' => 'Recordmodules',
-            'navigationComponent' => (!isset($localSettings['pids']) || strlen(trim($localSettings['pids'])) === 0) ? '@typo3/backend/page-tree/page-tree-element' : '',
+            'navigationComponent' => (!isset($settings['pids']) || strlen(trim((string)$settings['pids'])) === 0) ? '@typo3/backend/page-tree/page-tree-element' : '',
             'inheritNavigationComponentFromMainModule' => false,
             'routes' => [
                 '_default' => [
@@ -72,18 +64,18 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
             'moduleData' => [
                 'table' => $table,
                 'title' => $title,
-                'pids' => $localSettings['pids'] ?? [],
+                'pids' => $settings['pids'] ?? [],
                 'clipBoard' => true,
                 'searchBox' => true
             ],
         ];
 
-        if (isset($localSettings['icon']) && intval($localSettings['icon']) > 0) {
+        if (isset($settings['icon']) && intval($settings['icon']) > 0) {
             $fileRepository = GeneralUtility::makeInstance(FileRepository::class);
             $files = $fileRepository->findByRelation(
                 tableName: 'tx_recordmodules_config',
                 fieldName: 'icon',
-                uid: $localSettings['uid']
+                uid: $settings['uid']
             );
             if ($files) {
                 /** @var FileReference $iconFile */
@@ -91,11 +83,11 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
                 $localModuleConfiguration['icon'] = $iconFile->getPublicUrl();
             }
 
-        } elseif (isset($localSettings['icon']) && strlen((string)$localSettings['icon']) > 0
-            && (string)$localSettings['icon'] !== '0') {
-            $localModuleConfiguration['icon'] = $localSettings['icon'];
-        } elseif (isset($localSettings['iconIdentifier']) && strlen($localSettings['iconIdentifier']) > 0) {
-            $localModuleConfiguration['iconIdentifier'] = $localSettings['iconIdentifier'];
+        } elseif (isset($settings['icon']) && strlen((string)$settings['icon']) > 0
+            && (string)$settings['icon'] !== '0') {
+            $localModuleConfiguration['icon'] = $settings['icon'];
+        } elseif (isset($settings['iconIdentifier']) && strlen($settings['iconIdentifier']) > 0) {
+            $localModuleConfiguration['iconIdentifier'] = $settings['iconIdentifier'];
         } elseif (isset($GLOBALS['TCA'][$table]['ctrl']['iconfile'])) {
             $localModuleConfiguration['icon'] = $GLOBALS['TCA'][$table]['ctrl']['iconfile'];
         } elseif (count($typeIcons) > 0) {
@@ -106,11 +98,39 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
             }
         }
 
+        $modules[$identifier] = $localModuleConfiguration;
+    }
+    return $createCustomModuleGroup;
+}
 
-        $modules['recordmodules_module_' . $table] = $localModuleConfiguration;
+$modules = [];
+
+$qb = GeneralUtility::makeInstance(ConnectionPool::class)
+    ->getQueryBuilderForTable('tx_recordmodules_config');
+$configurationRecords = $qb->select('*')
+    ->from('tx_recordmodules_config')
+    ->executeQuery()->fetchAllAssociative();
+
+
+$createCustomModuleGroup = false;
+foreach ($GLOBALS['TCA'] as $table => $settings) {
+
+    $settings = $settings['ctrl']['recordModule'] ?? [];
+    if (!empty($settings)) {
+        $result = registerModule($table, $settings, $modules);
+        if ($result === true) {
+            $createCustomModuleGroup = true;
+        }
     }
 }
 
+foreach ($configurationRecords as $record) {
+    $record['activate'] = true;
+    $result = registerModule($record['tablename'], $record, $modules);
+    if ($result === true) {
+        $createCustomModuleGroup = true;
+    }
+}
 
 if ($modules) {
 
