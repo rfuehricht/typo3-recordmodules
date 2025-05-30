@@ -232,16 +232,16 @@ final class ModuleController extends RecordListController
 
         }
 
-        $tableTitle = $GLOBALS['TCA'][$this->table]['ctrl']['title'] ?? $this->table;
-        if (str_starts_with($tableTitle, 'LLL:')) {
-            $tableTitle = $languageService->sL($tableTitle);
+        $moduleTitle = $this->moduleData->get('title') ?? $GLOBALS['TCA'][$this->table]['ctrl']['title'] ?? $this->table;
+        if (str_starts_with($moduleTitle, 'LLL:')) {
+            $moduleTitle = $languageService->sL($moduleTitle);
         }
         $view->assignMultiple([
             'pageId' => $this->id,
             'table' => $this->table,
             'tabs' => $tabs,
             'pageTitle' => $title,
-            'tableTitle' => $tableTitle,
+            'moduleTitle' => $moduleTitle,
             'additionalContentTop' => $additionalRecordListEvent->getAdditionalContentAbove(),
             'searchBoxHtml' => $searchBoxHtml,
             'tableListHtml' => $tableListHtml,

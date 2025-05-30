@@ -1,13 +1,19 @@
 <html
-        xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-        xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
         data-namespace-typo3-fluid="true"
+        xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+        xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 >
 
 <f:layout name="Module" />
 
 <f:section name="Before">
     <f:be.pageRenderer
+            addJsInlineLabels="{
+            'editablePageTitle.input.field.label': 'LLL:EXT:backend/Resources/Private/Language/locallang_layout.xlf:editPageTitle.input.field.label',
+            'editablePageTitle.button.edit.label': 'LLL:EXT:backend/Resources/Private/Language/locallang_layout.xlf:editPageTitle',
+            'editablePageTitle.button.save.label': 'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:save',
+            'editablePageTitle.button.cancel.label': 'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel'
+        }"
             includeJavaScriptModules="{
             0: '@typo3/backend/recordlist.js',
             1: '@typo3/backend/record-download-button.js',
@@ -22,12 +28,6 @@
             10: '@typo3/backend/context-menu.js',
             11: '@typo3/backend/element/editable-page-title.js'
         }"
-            addJsInlineLabels="{
-            'editablePageTitle.input.field.label': 'LLL:EXT:backend/Resources/Private/Language/locallang_layout.xlf:editPageTitle.input.field.label',
-            'editablePageTitle.button.edit.label': 'LLL:EXT:backend/Resources/Private/Language/locallang_layout.xlf:editPageTitle',
-            'editablePageTitle.button.save.label': 'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:save',
-            'editablePageTitle.button.cancel.label': 'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel'
-        }"
     />
     <f:variable name="immediateActionArgs" value="{0: 'web', 1: pageId}" />
     <typo3-immediate-action
@@ -38,10 +38,10 @@
 
 <f:section name="Content">
 
-    <h1>{tableTitle}</h1>
+    <h1>{moduleTitle}</h1>
     <f:if condition="{tabs -> f:count()} > 0 && {f:first(value: tabs) -> f:count()} > 1">
         <div class="card-container">
-            <f:for as="siteTabs" key="siteIdentifier" each="{tabs}">
+            <f:for as="siteTabs" each="{tabs}" key="siteIdentifier">
                 <div class="card card-size-medium">
                     <div class="card-body">
                         <f:if condition="{tabs -> f:count()} > 1">
@@ -49,7 +49,7 @@
                         </f:if>
                         <f:if condition="{tabs -> f:count()} > 1 || {siteTabs -> f:count()} > 1">
                             <div class="tabs d-flex">
-                                <f:for each="{siteTabs}" iteration="i" as="tab">
+                                <f:for as="tab" each="{siteTabs}" iteration="i">
                                     <div class="tab my-2{f:if(condition: '!{i.isFirst}', then: ' ms-2')}">
                                         <f:variable name="rootLine" value="" />
                                         <f:for as="page" each="{tab.rootLine}" iteration="i">

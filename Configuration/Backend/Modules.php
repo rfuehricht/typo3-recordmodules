@@ -71,6 +71,7 @@ foreach ($GLOBALS['TCA'] as $table => $settings) {
             ],
             'moduleData' => [
                 'table' => $table,
+                'title' => $title,
                 'pids' => $localSettings['pids'] ?? [],
                 'clipBoard' => true,
                 'searchBox' => true
