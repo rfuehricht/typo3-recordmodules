@@ -5,48 +5,62 @@
 		<body>
 			<trans-unit id="tx_recordmodules_config.tcaTitle">
 				<source>Module Configuration</source>
+				<target>Modul-Konfiguration</target>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.tablename">
 				<source>Database table to list</source>
+				<target>Tabelle, die angezeigt werden soll</target>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.parent">
 				<source>Parent module</source>
+				<target>Übergeordnetes Modul</target>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.parent.description">
 				<source>Position of the custom module. Default: A new custom module group "Records".</source>
+				<target>Position des benutzerdefinierten Moduls. Standard: Anzeige in einer neuen Modulgruppe "Datensätze".</target>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.parent.default">
 				<source>Records</source>
+				<target>Datensätze</target>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.pids">
 				<source>Pages to list</source>
+				<target>Quell-Ordner/-Seiten für die Datensätze</target>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.pids.description">
 				<source>Specify the storage folders or pages to be available in the backend module. If empty, a page tree is shown to the user to select a desired page.</source>
+				<target>Geben Sie die Quell-Ordner oder Seiten an, die im Backend-Modul verfügbar sind. Wenn leer, wird dem Benutzer ein Seitenbaum angezeigt, um eine gewünschte Seite auszuwählen.</target>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.root_level">
 				<source>List only root level records?</source>
+				<target>Nur Root-Level anzeigen?</target>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.root_level.description">
 				<source>If set, no page tree is shown and any setting in "pids" has no effect. The module will only select record from root level (pid = 0).</source>
+				<target>Wenn aktiviert, wird kein Seitenbaum angezeigt und jede Einstellung der Quell-Ordner oder-Seiten hat keine Auswirkung. Das Modul zeigt nur Datensätze auf Root-Level (pid = 0) an.</target>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.title">
 				<source>Custom title</source>
+				<target>Benutzerdefinierter Titel</target>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.title.description">
-				<source>Custom title for the module. Default: Title of the table as defined in TCA.</source>
+				<source>Benutzerdefinierter Titel des Moduls. Standard: Titel der Tabelle wie im TCA definiert oder Name der Tabelle.</source>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.iconIdentifier">
 				<source>Icon identifier</source>
+				<target>Icon-Identifier</target>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.iconIdentifier.description">
 				<source>Custom icon identifier for the module. Default: Icon of the table as defined in TCA.</source>
+				<target>Benutzerdefinierter Icon-Identifier für das Modul. Standard: Icon der Tabelle wie im TCA definiert.</target>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.icon">
 				<source>Icon</source>
+				<target>Icon</target>
 			</trans-unit>
 			<trans-unit id="tx_recordmodules_config.icon.description">
 				<source>Custom icon for the module. Default: Icon of the table as defined in TCA.</source>
+				<target>Benutzerdefiniertes Icon für das Modul. Standard: Icon der Tabelle wie im TCA definiert.</target>
 			</trans-unit>
 		</body>
 	</file>

@@ -5,18 +5,23 @@
 		<body>
 			<trans-unit id="mlang_labels_tablabel">
 				<source>Records</source>
+				<target>Datensätze</target>
 			</trans-unit>
 			<trans-unit id="mlang_labels_tabdescr">
 				<source>Custom record listings.</source>
+				<target>Anzeige benutzerdefinierter Listen.</target>
 			</trans-unit>
 			<trans-unit id="mlang_tabs_tab">
 				<source>Records</source>
+				<target>Datensätze</target>
 			</trans-unit>
 			<trans-unit id="noPagesForThisTable">
-				<source>No source pages configured or none of the configured pages is accessible for you.</source>
+				<source>No page selected in tree, no source pages configured or none of the configured pages is accessible for you.</source>
+				<target>Keine Seite ausgewählt, keine Seite konfiguriert oder keine Seite für Sie zugänglich.</target>
 			</trans-unit>
 			<trans-unit id="noAccess">
-				<source>You have to read access for records of this type.</source>
+				<source>Read access for records of this type is required.</source>
+				<target>Lesezugriff aus Datensätzte dieses Typs ist erforderlich.</target>
 			</trans-unit>
 		</body>
 	</file>
