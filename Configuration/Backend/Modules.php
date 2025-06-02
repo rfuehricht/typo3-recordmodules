@@ -35,13 +35,12 @@ function registerModule($table, $settings, &$modules): bool
         }
 
         $originalIdentifier = 'recordmodules_module_' . $table;
-        $path = $table;
         $identifier = $originalIdentifier;
         if (isset($modules[$identifier])) {
             $identifier = $originalIdentifier . '_' . $settings['uid'];
-            $path = $table . $settings['uid'];
         }
 
+        $path = $identifier;
 
         $localModuleConfiguration = [
             'parent' => $parent,
@@ -49,7 +48,7 @@ function registerModule($table, $settings, &$modules): bool
             'sorting' => intval($sorting),
             'access' => 'user',
             'workspaces' => 'live',
-            'path' => '/module/record/' . $path,
+            'path' => '/module/' . $path,
             'labels' => [
                 'title' => $title
             ],

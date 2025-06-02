@@ -226,7 +226,7 @@ final class ModuleController extends RecordListController
                     $tabs[$identifier][$pid]['active'] = true;
                 }
 
-                $tabs[$identifier][$pid]['url'] = $this->uriBuilder->buildUriFromRoutePath('/module/record/' . $this->table, ['id' => $pid]);
+                $tabs[$identifier][$pid]['url'] = $this->uriBuilder->buildUriFromRoutePath('/module/' . $this->moduleData->getModuleIdentifier(), ['id' => $pid]);
             } catch (SiteNotFoundException) {
             }
 
