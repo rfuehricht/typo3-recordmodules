@@ -55,6 +55,7 @@ final class ModuleController extends RecordListController
 
         $this->id = (int)($parsedBody['id'] ?? $queryParams['id'] ?? '');
         $pids = [];
+
         if (is_array($this->moduleData->get('pids')) && !empty($this->moduleData->get('pids'))) {
             $pids = $this->moduleData->get('pids');
             foreach ($pids as &$pid) {
@@ -148,7 +149,7 @@ final class ModuleController extends RecordListController
         $dbList->calcPerms = $this->pagePermissions;
         $dbList->returnUrl = $this->returnUrl;
         $dbList->showClipboardActions = true;
-        $dbList->disableSingleTableView = true;
+        $dbList->disableSingleTableView = false;
         $dbList->listOnlyInSingleTableMode = false;
 
         // Only list current table
@@ -301,5 +302,4 @@ final class ModuleController extends RecordListController
 
         return $button;
     }
-
 }
