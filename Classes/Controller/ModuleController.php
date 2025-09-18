@@ -4,6 +4,8 @@ namespace Rfuehricht\Recordmodules\Controller;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Rfuehricht\Recordmodules\Event\AfterPidsLoadedEvent;
+use Rfuehricht\Recordmodules\Event\BeforePidsLoadedEvent;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Controller\Event\RenderAdditionalContentToRecordListEvent;
 use TYPO3\CMS\Backend\Controller\RecordListController;
@@ -54,30 +56,47 @@ final class ModuleController extends RecordListController
         $currentTable = $this->moduleData->get('table');
 
         $this->id = (int)($parsedBody['id'] ?? $queryParams['id'] ?? '');
+        $this->table = (string)($currentTable);
         $pids = [];
 
-        if (is_array($this->moduleData->get('pids')) && !empty($this->moduleData->get('pids'))) {
-            $pids = $this->moduleData->get('pids');
-            foreach ($pids as &$pid) {
-                $pid = intval($pid);
-            }
 
-            reset($pids);
-        } elseif (!is_array($this->moduleData->get('pids')) && strlen(trim($this->moduleData->get('pids'))) > 0) {
-            $pids = GeneralUtility::intExplode(',', (string)$this->moduleData->get('pids'), false);
-            foreach ($pids as $idx => $pid) {
-                if (strlen(trim($pid)) === 0) {
-                    unset($pids[$idx]);
+        /** @var BeforePidsLoadedEvent $event */
+        $event = GeneralUtility::makeInstance(BeforePidsLoadedEvent::class, $pids, $this->table);
+        $this->eventDispatcher->dispatch($event);
+
+        if ($event->getPids()) {
+            $pids = $event->getPids();
+        } else {
+
+            if (is_array($this->moduleData->get('pids')) && !empty($this->moduleData->get('pids'))) {
+                $pids = $this->moduleData->get('pids');
+                foreach ($pids as &$pid) {
+                    $pid = intval($pid);
                 }
-            }
-            reset($pids);
-        } elseif ((isset($parsedBody['id']) && $parsedBody['id'] !== '') || (isset($queryParams['id']) && $queryParams['id'] !== '')) {
-            $pids = [
-                $this->id
-            ];
-        }
 
+                reset($pids);
+            } elseif (!is_array($this->moduleData->get('pids')) && strlen(trim($this->moduleData->get('pids'))) > 0) {
+                $pids = GeneralUtility::intExplode(',', (string)$this->moduleData->get('pids'), false);
+                foreach ($pids as $idx => $pid) {
+                    if (strlen(trim($pid)) === 0) {
+                        unset($pids[$idx]);
+                    }
+                }
+                reset($pids);
+            } elseif ((isset($parsedBody['id']) && $parsedBody['id'] !== '') || (isset($queryParams['id']) && $queryParams['id'] !== '')) {
+                $pids = [
+                    $this->id
+                ];
+            }
+        }
         unset($pid);
+
+        /** @var AfterPidsLoadedEvent $event */
+        $event = GeneralUtility::makeInstance(AfterPidsLoadedEvent::class, $pids, $this->table);
+        $event->setPids($pids);
+        $this->eventDispatcher->dispatch($event);
+
+        $pids = $event->getPids();
 
 
         foreach ($pids as $idx => $pid) {
@@ -98,7 +117,7 @@ final class ModuleController extends RecordListController
             $this->id = reset($pids);
         }
         $pointer = max(0, (int)($parsedBody['pointer'] ?? $queryParams['pointer'] ?? 0));
-        $this->table = (string)($currentTable);
+
         $this->searchTerm = trim((string)($parsedBody['searchTerm'] ?? $queryParams['searchTerm'] ?? ''));
         $search_levels = 0;
         $this->returnUrl = GeneralUtility::sanitizeLocalUrl((string)($parsedBody['returnUrl'] ?? $queryParams['returnUrl'] ?? ''));

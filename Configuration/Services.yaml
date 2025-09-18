@@ -8,3 +8,9 @@ services:
     resource: '../Classes/*'
     autowire: true
     public: true
+
+  Rfuehricht\Recordmodules\Event\BeforePidsLoadedEvent:
+    autowire: false
+
+  Rfuehricht\Recordmodules\Event\AfterPidsLoadedEvent:
+    autowire: false
