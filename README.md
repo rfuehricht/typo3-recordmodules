@@ -49,3 +49,26 @@ On root level you can create configuration records for each desired backend modu
 The settings are nearly the same as the settings in TCA.
 
 ![Example of a configuration record listing backend users](Documentation/Images/record.png "Configuration record")
+
+
+### Events
+
+EXT:recordmodules offers two events to adjust the PIDs used by a module.
+
+**BeforePidsLoadedEvent** and **AfterPidsLoadedEvent**. The event holds the PIDs and the current table used.
+
+Example:
+
+```php
+use Rfuehricht\Recordmodules\Event\BeforePidsLoadedEvent;
+
+final class ModifyRecordModulesPids
+{
+    public function __invoke(BeforePidsLoadedEvent $event): void
+    {
+        if ($event->getTable() === 'tx_news_domain_model_news') {
+            $event->setPids([123, 124, 125]);
+        }
+    }
+}
+```
