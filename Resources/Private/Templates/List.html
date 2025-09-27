@@ -1,20 +1,20 @@
 <html
-        data-namespace-typo3-fluid="true"
-        xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
-        xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 >
 
 <f:layout name="Module" />
 
 <f:section name="Before">
     <f:be.pageRenderer
-            addJsInlineLabels="{
+        addJsInlineLabels="{
             'editablePageTitle.input.field.label': 'LLL:EXT:backend/Resources/Private/Language/locallang_layout.xlf:editPageTitle.input.field.label',
             'editablePageTitle.button.edit.label': 'LLL:EXT:backend/Resources/Private/Language/locallang_layout.xlf:editPageTitle',
             'editablePageTitle.button.save.label': 'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:save',
             'editablePageTitle.button.cancel.label': 'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel'
         }"
-            includeJavaScriptModules="{
+        includeJavaScriptModules="{
             0: '@typo3/backend/recordlist.js',
             1: '@typo3/backend/record-download-button.js',
             2: '@typo3/backend/clear-cache.js',
@@ -31,15 +31,14 @@
     />
     <f:variable name="immediateActionArgs" value="{0: 'web', 1: pageId}" />
     <typo3-immediate-action
-            action="TYPO3.Backend.Storage.ModuleStateStorage.update"
-            args="{immediateActionArgs -> f:format.json() -> f:format.htmlspecialchars()}"
+        action="TYPO3.Backend.Storage.ModuleStateStorage.update"
+        args="{immediateActionArgs -> f:format.json() -> f:format.htmlspecialchars()}"
     ></typo3-immediate-action>
 </f:section>
 
 <f:section name="Content">
-
     <h1>{moduleTitle}</h1>
-    <f:if condition="{tabs -> f:count()} > 0 && {f:first(value: tabs) -> f:count()} > 1">
+    <f:if condition="{tabs -> f:count()} > 1 || {f:first(value: tabs) -> f:count()} > 1}">
         <div class="card-container">
             <f:for as="siteTabs" each="{tabs}" key="siteIdentifier">
                 <div class="card card-size-medium">
@@ -47,31 +46,29 @@
                         <f:if condition="{tabs -> f:count()} > 1">
                             <h2 class="card-title">Site: {siteIdentifier -> f:format.crop(maxCharacters: '20', append: '...')}</h2>
                         </f:if>
-                        <f:if condition="{tabs -> f:count()} > 1 || {siteTabs -> f:count()} > 1">
-                            <div class="tabs d-flex">
-                                <f:for as="tab" each="{siteTabs}" iteration="i">
-                                    <div class="tab my-2{f:if(condition: '!{i.isFirst}', then: ' ms-2')}">
-                                        <f:variable name="rootLine" value="" />
-                                        <f:for as="page" each="{tab.rootLine}" iteration="i">
-                                            <f:if condition="{page.title}">
-                                                <f:if condition="{i.isLast}">
-                                                    <f:then><f:variable name="rootLine" value="{rootLine}{page.title}" /></f:then>
-                                                    <f:else>
-                                                        <f:variable name="rootLine" value="{rootLine}{page.title} -> " />
-                                                    </f:else>
-                                                </f:if>
+                        <div class="tabs d-flex">
+                            <f:for as="tab" each="{siteTabs}" iteration="i">
+                                <div class="tab my-2{f:if(condition: '!{i.isFirst}', then: ' ms-2')}">
+                                    <f:variable name="rootLine" value="" />
+                                    <f:for as="page" each="{tab.rootLine}" iteration="i">
+                                        <f:if condition="{page.title}">
+                                            <f:if condition="{i.isLast}">
+                                                <f:then><f:variable name="rootLine" value="{rootLine}{page.title}" /></f:then>
+                                                <f:else>
+                                                    <f:variable name="rootLine" value="{rootLine}{page.title} -> " />
+                                                </f:else>
                                             </f:if>
-                                        </f:for>
-                                        <a class="btn btn-default{f:if(condition: tab.active, then: ' active')}" href="{tab.url}">
-                                            <f:if condition="{tab.active}">
-                                                <f:then><core:icon identifier="actions-check-square" /></f:then>
-                                                <f:else><core:icon identifier="actions-square" /></f:else>
-                                            </f:if><span class="d-inline-block ms-1">{rootLine}</span>
-                                        </a>
-                                    </div>
-                                </f:for>
-                            </div>
-                        </f:if>
+                                        </f:if>
+                                    </f:for>
+                                    <a class="btn btn-default{f:if(condition: tab.active, then: ' active')}" href="{tab.url}">
+                                        <f:if condition="{tab.active}">
+                                            <f:then><core:icon identifier="actions-check-square" /></f:then>
+                                            <f:else><core:icon identifier="actions-square" /></f:else>
+                                        </f:if><span class="d-inline-block ms-1">{rootLine}</span>
+                                    </a>
+                                </div>
+                            </f:for>
+                        </div>
                     </div>
                 </div>
             </f:for>
