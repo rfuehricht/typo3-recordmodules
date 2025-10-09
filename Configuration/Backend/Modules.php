@@ -31,7 +31,19 @@ function registerModule($table, $settings, &$modules): bool
         }
 
         if (isset($settings['root_level']) && intval($settings['root_level']) === 1) {
-            $settings['pids'] = '0';
+            $settings['pids'] = ['0'];
+        }
+        if (!isset($settings['pids'])) {
+            $settings['pids'] = [];
+        }
+        if (!is_array($settings['pids'])) {
+            $settings['pids'] = GeneralUtility::intExplode(',', (string)$settings['pids'], true);
+        }
+        $navigationComponent = '';
+
+        // Show page tree if no PIDs are set.
+        if (count($settings['pids']) === 0) {
+            $navigationComponent = '@typo3/backend/page-tree/page-tree-element';
         }
 
         $originalIdentifier = 'recordmodules_module_' . $table;
@@ -53,7 +65,7 @@ function registerModule($table, $settings, &$modules): bool
                 'title' => $title
             ],
             'extensionName' => 'Recordmodules',
-            'navigationComponent' => (!isset($settings['pids']) || strlen(trim((string)$settings['pids'])) === 0) ? '@typo3/backend/page-tree/page-tree-element' : '',
+            'navigationComponent' => $navigationComponent,
             'inheritNavigationComponentFromMainModule' => false,
             'routes' => [
                 '_default' => [
