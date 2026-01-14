@@ -20,6 +20,7 @@ use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
@@ -32,8 +33,6 @@ final class ModuleController extends RecordListController
 
     public function mainAction(ServerRequestInterface $request): ResponseInterface
     {
-
-
         /** @var ModuleData moduleData */
         $this->moduleData = $request->getAttribute('moduleData');
         /** @var Route $route */
@@ -67,7 +66,6 @@ final class ModuleController extends RecordListController
         if ($event->getPids()) {
             $pids = $event->getPids();
         } else {
-
             if (is_array($this->moduleData->get('pids')) && !empty($this->moduleData->get('pids'))) {
                 $pids = $this->moduleData->get('pids');
                 foreach ($pids as &$pid) {
@@ -109,7 +107,9 @@ final class ModuleController extends RecordListController
         }
 
 
-        $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_mod_web_list.xlf');
+        $this->pageRenderer->addInlineLanguageLabelFile(
+            'EXT:core/Resources/Private/Language/locallang_mod_web_list.xlf'
+        );
 
         BackendUtility::lockRecords();
 
@@ -120,9 +120,15 @@ final class ModuleController extends RecordListController
 
         $this->searchTerm = trim((string)($parsedBody['searchTerm'] ?? $queryParams['searchTerm'] ?? ''));
         $search_levels = 0;
-        $this->returnUrl = GeneralUtility::sanitizeLocalUrl((string)($parsedBody['returnUrl'] ?? $queryParams['returnUrl'] ?? ''));
+        $this->returnUrl = GeneralUtility::sanitizeLocalUrl(
+            (string)($parsedBody['returnUrl'] ?? $queryParams['returnUrl'] ?? '')
+        );
         $cmd = (string)($parsedBody['cmd'] ?? $queryParams['cmd'] ?? '');
-        $siteLanguages = $request->getAttribute('site')->getAvailableLanguages($this->getBackendUserAuthentication(), false, $this->id);
+        $siteLanguages = $request->getAttribute('site')->getAvailableLanguages(
+            $this->getBackendUserAuthentication(),
+            false,
+            $this->id
+        );
 
         $pageInfo = BackendUtility::readPageAccess($this->id, $perms_clause);
         $access = is_array($pageInfo);
@@ -140,7 +146,6 @@ final class ModuleController extends RecordListController
         if (empty($pids)) {
             $this->addFlashMessage($view, 'noPagesForThisTable', ContextualFeedbackSeverity::ERROR);
             return $view->renderResponse('List');
-
         }
 
         if (!$backendUser->isAdmin() && !$backendUser->check('tables_select', $currentTable)) {
@@ -187,7 +192,9 @@ final class ModuleController extends RecordListController
         $clipboard = $this->initializeClipboard($request, (bool)$this->moduleData->get('clipBoard'));
         $dbList->clipObj = $clipboard;
 
-        $additionalRecordListEvent = $this->eventDispatcher->dispatch(new RenderAdditionalContentToRecordListEvent($request));
+        $additionalRecordListEvent = $this->eventDispatcher->dispatch(
+            new RenderAdditionalContentToRecordListEvent($request)
+        );
 
 
         $tableListHtml = '';
@@ -203,12 +210,16 @@ final class ModuleController extends RecordListController
         $title = $pageInfo['title'] ?? '';
 
         $searchBoxHtml = '';
-        if ($this->allowSearch && $this->moduleData->get('searchBox') && ($tableListHtml || !empty($this->searchTerm))) {
+        if ($this->allowSearch && $this->moduleData->get(
+                'searchBox'
+            ) && ($tableListHtml || !empty($this->searchTerm))) {
             $searchBoxHtml = $this->renderSearchBox($request, $dbList, $this->searchTerm, $search_levels);
         }
         $clipboardHtml = '';
         if ($this->moduleData->get('clipBoard') && ($tableListHtml || $clipboard->hasElements())) {
-            $clipboardHtml = '<hr class="spacer"><typo3-backend-clipboard-panel return-url="' . htmlspecialchars($dbList->listURL()) . '"></typo3-backend-clipboard-panel>';
+            $clipboardHtml = '<hr class="spacer"><typo3-backend-clipboard-panel return-url="' . htmlspecialchars(
+                    $dbList->listURL()
+                ) . '"></typo3-backend-clipboard-panel>';
         }
 
         if (empty($tableListHtml)) {
@@ -220,7 +231,13 @@ final class ModuleController extends RecordListController
         }
 
         $this->modTSconfig['noCreateRecordsLink'] = true;
-        $this->getDocHeaderButtons($view, $clipboard, $request, $this->table, $dbList->listURL(), []);
+
+        $version = GeneralUtility::makeInstance(Typo3Version::class);
+        if ($version->getMajorVersion() >= 13) {
+            $this->getDocHeaderButtons($view, $clipboard, $request, $dbList);
+        } else {
+            $this->getDocHeaderButtons($view, $clipboard, $request, $this->table, $dbList->listURL(), []);
+        }
 
         $tabs = [];
         foreach ($pids as $pid) {
@@ -246,13 +263,17 @@ final class ModuleController extends RecordListController
                     $tabs[$identifier][$pid]['active'] = true;
                 }
 
-                $tabs[$identifier][$pid]['url'] = $this->uriBuilder->buildUriFromRoutePath('/module/' . $this->moduleData->getModuleIdentifier(), ['id' => $pid]);
+                $tabs[$identifier][$pid]['url'] = $this->uriBuilder->buildUriFromRoutePath(
+                    '/module/' . $this->moduleData->getModuleIdentifier(),
+                    ['id' => $pid]
+                );
             } catch (SiteNotFoundException) {
             }
-
         }
 
-        $moduleTitle = $this->moduleData->get('title') ?? $GLOBALS['TCA'][$this->table]['ctrl']['title'] ?? $this->table;
+        $moduleTitle = $this->moduleData->get(
+            'title'
+        ) ?? $GLOBALS['TCA'][$this->table]['ctrl']['title'] ?? $this->table;
         if (str_starts_with($moduleTitle, 'LLL:')) {
             $moduleTitle = $languageService->sL($moduleTitle);
         }
@@ -277,8 +298,11 @@ final class ModuleController extends RecordListController
      * @param ContextualFeedbackSeverity $severity
      * @return void
      */
-    protected function addFlashMessage(ModuleTemplate $view, string $key, ContextualFeedbackSeverity $severity = ContextualFeedbackSeverity::INFO): void
-    {
+    protected function addFlashMessage(
+        ModuleTemplate $view,
+        string $key,
+        ContextualFeedbackSeverity $severity = ContextualFeedbackSeverity::INFO
+    ): void {
         $languageService = $this->getLanguageService();
         $message = $languageService->sL('LLL:EXT:recordmodules/Resources/Private/Language/locallang_mod.xlf:' . $key);
         $view->addFlashMessage($message, '', $severity);
@@ -295,7 +319,9 @@ final class ModuleController extends RecordListController
     {
         $tag = 'a';
         $iconIdentifier = 'actions-plus';
-        $label = $this->getLanguageService()->sL('LLL:EXT:core/Resources/Private/Language/locallang_mod_web_list.xlf:new');
+        $label = $this->getLanguageService()->sL(
+            'LLL:EXT:core/Resources/Private/Language/locallang_mod_web_list.xlf:new'
+        );
         $attributes = [
             'data-recordlist-action' => 'new',
         ];
