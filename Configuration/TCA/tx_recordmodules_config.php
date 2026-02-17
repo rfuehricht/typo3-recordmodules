@@ -18,7 +18,6 @@ return [
         'sortby' => 'sorting',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
-        'cruser_id' => 'cruser_id',
         'delete' => 'deleted',
         'enablecolumns' => [
             'disabled' => 'hidden'
@@ -40,7 +39,7 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'itemsProcFunc' => ItemsProcFunc::class . '->getAllTables',
-                'eval' => 'required',
+                'required' => true,
                 'sortItems' => [
                     'label' => 'asc'
                 ]
@@ -53,7 +52,7 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'itemsProcFunc' => ItemsProcFunc::class . '->getAllToplevelModules',
-                'eval' => 'required',
+                'required' => true,
                 'default' => 'recordmodules',
                 'sortItems' => [
                     'label' => 'asc'
