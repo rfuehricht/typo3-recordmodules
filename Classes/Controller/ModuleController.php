@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Rfuehricht\Recordmodules\Event\AfterPidsLoadedEvent;
 use Rfuehricht\Recordmodules\Event\BeforePidsLoadedEvent;
 use TYPO3\CMS\Backend\Attribute\AsController;
+use TYPO3\CMS\Backend\Context\PageContext;
 use TYPO3\CMS\Backend\Controller\Event\RenderAdditionalContentToRecordListEvent;
 use TYPO3\CMS\Backend\Controller\RecordListController;
 use TYPO3\CMS\Backend\Module\ModuleData;
@@ -20,6 +21,7 @@ use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
@@ -33,6 +35,16 @@ final class ModuleController extends RecordListController
 
     public function mainAction(ServerRequestInterface $request): ResponseInterface
     {
+
+        $pageContext = $request->getAttribute('pageContext');
+        if (!$pageContext instanceof PageContext) {
+            throw new \RuntimeException(
+                'PageContext not initialized by middleware.',
+                1731415238
+            );
+        }
+        $this->pageContext = $pageContext;
+
         /** @var ModuleData moduleData */
         $this->moduleData = $request->getAttribute('moduleData');
         /** @var Route $route */
@@ -342,7 +354,7 @@ final class ModuleController extends RecordListController
         $button->setTag($tag);
         $button->setLabel($label);
         $button->setShowLabelText(true);
-        $button->setIcon($this->iconFactory->getIcon($iconIdentifier, Icon::SIZE_SMALL));
+        $button->setIcon($this->iconFactory->getIcon($iconIdentifier, IconSize::SMALL));
         $button->setAttributes($attributes);
 
         return $button;

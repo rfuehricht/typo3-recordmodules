@@ -39,11 +39,11 @@ function registerModule($table, $settings, &$modules): bool
         if (!is_array($settings['pids'])) {
             $settings['pids'] = GeneralUtility::intExplode(',', (string)$settings['pids'], true);
         }
-        $navigationComponent = '';
+        $navigationComponent = '@typo3/backend/tree/page-tree-element';
 
         // Show page tree if no PIDs are set.
         if (count($settings['pids']) === 0) {
-            $navigationComponent = '@typo3/backend/page-tree/page-tree-element';
+            $navigationComponent = '@typo3/backend/tree/page-tree-element';
         }
 
         $originalIdentifier = 'recordmodules_module_' . $table;

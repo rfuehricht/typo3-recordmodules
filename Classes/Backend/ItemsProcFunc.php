@@ -9,6 +9,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ItemsProcFunc
 {
 
+    public function __construct(
+        private readonly ModuleProvider $moduleProvider
+    )
+    {
+
+    }
+
     public function getAllTables(array &$params): void
     {
         $params['items'][] =
@@ -33,8 +40,7 @@ class ItemsProcFunc
 
     public function getAllToplevelModules(array &$params): void
     {
-        $modules = GeneralUtility::makeInstance(ModuleProvider::class)
-            ->getModules();
+        $modules = $this->moduleProvider->getModules();
 
 
         $params['items'][] =
