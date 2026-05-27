@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rfuehricht\Recordmodules\Event\AfterPidsLoadedEvent;
 use Rfuehricht\Recordmodules\Event\BeforePidsLoadedEvent;
+use RuntimeException;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Context\PageContext;
 use TYPO3\CMS\Backend\Controller\Event\RenderAdditionalContentToRecordListEvent;
@@ -20,13 +21,13 @@ use TYPO3\CMS\Backend\Template\Components\Buttons\GenericButton;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 #[AsController]
 final class ModuleController extends RecordListController
@@ -35,15 +36,16 @@ final class ModuleController extends RecordListController
 
     public function mainAction(ServerRequestInterface $request): ResponseInterface
     {
-
-        $pageContext = $request->getAttribute('pageContext');
-        if (!$pageContext instanceof PageContext) {
-            throw new \RuntimeException(
-                'PageContext not initialized by middleware.',
-                1731415238
-            );
+        if (str_starts_with('14.', VersionNumberUtility::getCurrentTypo3Version())) {
+            $pageContext = $request->getAttribute('pageContext');
+            if (!$pageContext instanceof PageContext) {
+                throw new RuntimeException(
+                    'PageContext not initialized by middleware.',
+                    1731415238
+                );
+            }
+            $this->pageContext = $pageContext;
         }
-        $this->pageContext = $pageContext;
 
         /** @var ModuleData moduleData */
         $this->moduleData = $request->getAttribute('moduleData');
