@@ -36,7 +36,7 @@ final class ModuleController extends RecordListController
 
     public function mainAction(ServerRequestInterface $request): ResponseInterface
     {
-        if (str_starts_with('14.', VersionNumberUtility::getCurrentTypo3Version())) {
+        if (str_starts_with(VersionNumberUtility::getCurrentTypo3Version(), '14.')) {
             $pageContext = $request->getAttribute('pageContext');
             if (!$pageContext instanceof PageContext) {
                 throw new RuntimeException(
