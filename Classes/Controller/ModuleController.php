@@ -9,6 +9,7 @@ use Rfuehricht\Recordmodules\Event\BeforePidsLoadedEvent;
 use RuntimeException;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Context\PageContext;
+use TYPO3\CMS\Backend\Context\PageContextFactory;
 use TYPO3\CMS\Backend\Controller\Event\RenderAdditionalContentToRecordListEvent;
 use TYPO3\CMS\Backend\Controller\RecordListController;
 use TYPO3\CMS\Backend\Module\ModuleData;
@@ -36,16 +37,6 @@ final class ModuleController extends RecordListController
 
     public function mainAction(ServerRequestInterface $request): ResponseInterface
     {
-        if (str_starts_with(VersionNumberUtility::getCurrentTypo3Version(), '14.')) {
-            $pageContext = $request->getAttribute('pageContext');
-            if (!$pageContext instanceof PageContext) {
-                throw new RuntimeException(
-                    'PageContext not initialized by middleware.',
-                    1731415238
-                );
-            }
-            $this->pageContext = $pageContext;
-        }
 
         /** @var ModuleData moduleData */
         $this->moduleData = $request->getAttribute('moduleData');
@@ -109,6 +100,23 @@ final class ModuleController extends RecordListController
         $this->eventDispatcher->dispatch($event);
 
         $pids = $event->getPids();
+
+        if (str_starts_with(VersionNumberUtility::getCurrentTypo3Version(), '14.')) {
+            $pageContext = $request->getAttribute('pageContext');
+            if (!$pageContext instanceof PageContext) {
+                $pageId = $this->id;
+                if(intval($pageId) === 0) {
+                    $pageId = reset($pids);
+                }
+
+                $pageContext = $this->pageContextFactory->createFromRequest(
+                    $request,
+                    (int)$pageId,
+                    $backendUser
+                );
+            }
+            $this->pageContext = $pageContext;
+        }
 
 
         foreach ($pids as $idx => $pid) {

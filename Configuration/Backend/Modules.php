@@ -41,12 +41,12 @@ function registerModule($table, $settings, &$modules): bool
             $settings['pids'] = GeneralUtility::intExplode(',', (string)$settings['pids'], true);
         }
         $navigationComponent = '';
-
-        if (str_starts_with(VersionNumberUtility::getCurrentTypo3Version(), '14.')) {
-            $navigationComponent = '@typo3/backend/tree/page-tree-element';
-        } elseif (count($settings['pids']) === 0) {
-            // Show page tree if no PIDs are set.
-            $navigationComponent = '@typo3/backend/page-tree/page-tree-element';
+        if (count($settings['pids']) === 0) {
+            if (str_starts_with(VersionNumberUtility::getCurrentTypo3Version(), '14.')) {
+                $navigationComponent = '@typo3/backend/tree/page-tree-element';
+            } else {
+                $navigationComponent = '@typo3/backend/page-tree/page-tree-element';
+            }
         }
 
         $originalIdentifier = 'recordmodules_module_' . $table;
