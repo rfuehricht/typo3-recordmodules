@@ -6,7 +6,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rfuehricht\Recordmodules\Event\AfterPidsLoadedEvent;
 use Rfuehricht\Recordmodules\Event\BeforePidsLoadedEvent;
-use RuntimeException;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Context\PageContext;
 use TYPO3\CMS\Backend\Context\PageContextFactory;
@@ -37,7 +36,6 @@ final class ModuleController extends RecordListController
 
     public function mainAction(ServerRequestInterface $request): ResponseInterface
     {
-
         /** @var ModuleData moduleData */
         $this->moduleData = $request->getAttribute('moduleData');
         /** @var Route $route */
@@ -105,8 +103,15 @@ final class ModuleController extends RecordListController
             $pageContext = $request->getAttribute('pageContext');
             if (!$pageContext instanceof PageContext) {
                 $pageId = $this->id;
-                if(intval($pageId) === 0) {
+                if (intval($pageId) === 0) {
                     $pageId = reset($pids);
+                }
+
+                $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+                try {
+                    $site = $siteFinder->getSiteByPageId($pageId);
+                    $request = $request->withAttribute('site', $site);
+                } catch (SiteNotFoundException $e) {
                 }
 
                 $pageContext = $this->pageContextFactory->createFromRequest(
@@ -116,6 +121,8 @@ final class ModuleController extends RecordListController
                 );
             }
             $this->pageContext = $pageContext;
+
+            $this->moduleData->set('languages', $this->pageContext->languageInformation->getAllExistingLanguageIds());
         }
 
 
